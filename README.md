@@ -28,7 +28,7 @@ as:
 - course memorization: "replaying" human-driven laps around a course, possibly with some degree of
   correction and/or adaptation
 - course navigation: navigating a course autonomously, without previous course-specific training or
-- human assistance
+  human assistance
 
 These latter goals are largely aspriational and tentative, as there are already a number of machine
 learning-oriented projects, competitions, etc. focusing on scale vehicles.
