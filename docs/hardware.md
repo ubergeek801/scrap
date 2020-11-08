@@ -1,4 +1,29 @@
-# Scale Car Racing Automation Platform (SCRAP)
+# SCRAP Hardware
+
+```
+                           IMU RST -+
+                         UI ??? -+  |
+                    sonar EN -+  |  |
+                  sonar 1 -+  |  |  |
+               sonar 2 -+  |  |  |  |        +---------- UI ???
+            sonar 3 -+  |  |  |  |  |        |  +------- V or I
+    OLED/IMU SCL -+  |  |  |  |  |  |        |  |  +---- UI ???
+ OLED/IMU SDA -+  |  |  |  |  |  |  |        |  |  |  +- Hall (propshaft RPM)
+               |  |  |  |  |  |  |  |        |  |  |  |
+              21 22 19 23 18 05 10 09 RX TX 35 34 38 37 EN GR 3V
+            +----------------------------------------------------+
+            |                                I  I  I  I          |
+            |                                                    |
+            +----------------------------------------------------+
+              VP VN 25 26 32 35 27 14 12 13 15 02 04 00 3V GR 5V
+                     |  |  |  |  |  |     |        |
+        steering in -+  |  |  |  |  |     |        +- steering or throttle out
+           throttle in -+  |  |  |  |     +---------- steering or throttle out
+                flow SCLK -+  |  |  |
+                   flow MOSI -+  |  |
+                      flow MISO -+  |
+                          flow CS? -+
+```
 
 ## System
 - Battery voltage: analog input
