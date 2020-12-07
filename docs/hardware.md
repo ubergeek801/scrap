@@ -30,7 +30,7 @@ OLED/IMU SDA -+  |  |  |  |  |  |  |        |  |  |  +- Hall (propshaft RPM)
 ## Proposed Final Wiring
 
 ```
-    OLED SCL ----------------+  +---------------------- master reset
+    OLED SCL ----------------+  +---------------------- E-Ink 3 CS
     OLED SDA -------------+  |  |  +------------------- E-Ink 2 CS
 steering out ----------+  |  |  |  |        +---------- sonar 1 echo
  steering in -------+  |  |  |  |  |        |  +------- sonar 2 echo
