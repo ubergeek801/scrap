@@ -12,9 +12,9 @@ OLED/IMU SDA -+  |  |  |  |  |  |  |        |  |  |  +- Hall (propshaft RPM)
               |  |  |  |  |  |  |  |        |  |  |  |
              21 22 19 23 18 05 10 09 RX TX 35 34 38 37 EN GR 3V
            +----------------------------------------------------+
-           |                               IA IA IA IA          |
+           |                B              IA IA IA IA          |
            | ESP32-PICO-KIT V4                                  |
-           | IA IA DW DW  A  A  W  W  W  W  W  W  W BW          |
+           | IA IA DW DW  A  A  W  W  W  W  W BW  W BW          |
            +----------------------------------------------------+
              VP VN 25 26 32 33 27 14 12 13 15 02 04 00 3V GR 5V
                     |  |  |  |  |  |     |        |
@@ -23,8 +23,8 @@ OLED/IMU SDA -+  |  |  |  |  |  |  |        |  |  |  +- Hall (propshaft RPM)
  optical flow SCLK -------+  |  |  +---------------- optical flow CS?
  optical flow MOSI ----------+  +------------------- optical flow MISO
 
-| I = Input-only | A = ADC available | D = DAC available |
-| B = Reserved at boot | W = ADC available when WiFi off |
+| I = Input-only | A = ADC available | D = DAC available   |
+| B = Boot strapping pin | W = ADC available when WiFi off |
 ```
 
 ## Proposed Final Wiring
@@ -39,9 +39,9 @@ throttle out ----+  |  |  |  |  |  |        |  |  +---- UI A/B/C
               |  |  |  |  |  |  |  |        |  |  |  |
              21 22 19 23 18 05 10 09 RX TX 35 34 38 37 EN GR 3V
            +----------------------------------------------------+
-           |                               IA IA IA IA          |
+           |                B              IA IA IA IA          |
            | ESP32-PICO-KIT V4                                  |
-           | IA IA DW DW  A  A  W  W  W  W  W  W  W BW          |
+           | IA IA DW DW  A  A  W  W  W  W  W BW  W BW          |
            +----------------------------------------------------+
              VP VN 25 26 32 33 27 14 12 13 15 02 04 00 3V GR 5V
               |  |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -53,8 +53,8 @@ current draw ----+  |  |  |  |  |  |  |  |  |  |  +---- sonar 3 echo
    E-Ink D/C ----------------+  |  |  +---------------- E-Ink MISO
   E-Ink 1 CS -------------------+  +------------------- E-Ink SCLK
 
-| I = Input-only | A = ADC available | D = DAC available |
-| B = Reserved at boot | W = ADC available when WiFi off |
+| I = Input-only | A = ADC available | D = DAC available   |
+| B = Boot strapping pin | W = ADC available when WiFi off |
 ```
 
 ## System
