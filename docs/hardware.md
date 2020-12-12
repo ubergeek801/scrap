@@ -45,8 +45,8 @@ throttle out ----+  |  |  |  |  |  |        |  |  +---- UI A/B/C
            +----------------------------------------------------+
              VP VN 25 26 32 33 27 14 12 13 15 02 04 00 3V GR 5V
               |  |  |  |  |  |  |  |  |  |  |  |  |  |
-     voltage -+  |  |  |  |  |  |  |  |  |  |  |  |  +- sonar trigger
-current draw ----+  |  |  |  |  |  |  |  |  |  |  +---- sonar 3 echo
+current draw -+  |  |  |  |  |  |  |  |  |  |  |  |  +- sonar trigger
+     voltage ----+  |  |  |  |  |  |  |  |  |  |  +---- sonar 3 echo
    flow SCLK -------+  |  |  |  |  |  |  |  |  +------- IMU SCL
    flow MOSI ----------+  |  |  |  |  |  |  +---------- IMU SDA
    flow MISO -------------+  |  |  |  |  +------------- E-Ink MOSI
