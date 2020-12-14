@@ -50,7 +50,7 @@ current draw -+  |  |  |  |  |  |  |  |  |  |  |  |  +- sonar trigger
    flow SCLK -------+  |  |  |  |  |  |  |  |  +------- IMU SCL
    flow MOSI ----------+  |  |  |  |  |  |  +---------- IMU SDA
    flow MISO -------------+  |  |  |  |  +------------- E-Ink MOSI
-   E-Ink D/C ----------------+  |  |  +---------------- E-Ink MISO
+     flow CS ----------------+  |  |  +---------------- E-Ink D/C
   E-Ink 1 CS -------------------+  +------------------- E-Ink SCLK
 
 | I = Input-only | A = ADC available | D = DAC available   |
