@@ -18,8 +18,8 @@ throttle out ----+  |  |  |  |  |  |        |  |  +---- UI A/B/C
            +----------------------------------------------------+
              VP VN 25 26 32 33 27 14 12 13 15 02 04 00 3V GR 5V
               |  |  |  |  |  |  |  |  |  |  |  |  |  |
-current draw -+  |  |  |  |  |  |  |  |  |  |  |  |  +- IMU SDA
-     voltage ----+  |  |  |  |  |  |  |  |  |  |  +---- sonar ping/3 echo
+current draw -+  |  |  |  |  |  |  |  |  |  |  |  |  +- sonar ping/3 echo
+     voltage ----+  |  |  |  |  |  |  |  |  |  |  +---- IMU SDA
    flow SCLK -------+  |  |  |  |  |  |  |  |  +------- peripheral reset
    flow MOSI ----------+  |  |  |  |  |  |  +---------- IMU SCL
    flow MISO -------------+  |  |  |  |  +------------- E-Ink MOSI
