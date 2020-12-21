@@ -32,8 +32,8 @@ OLED/IMU SDA -+  |  |  |  |  |  |  |        |  |  |  +- Hall (propshaft RPM)
 ```
     OLED SCL ----------------+  +---------------------- E-Ink 3 CS
     OLED SDA -------------+  |  |  +------------------- E-Ink 2 CS
-steering out ----------+  |  |  |  |        +---------- sonar 1 ping/echo
- steering in -------+  |  |  |  |  |        |  +------- sonar 2 ping/echo
+steering out ----------+  |  |  |  |        +---------- sonar 1 echo
+ steering in -------+  |  |  |  |  |        |  +------- sonar 2 echo
 throttle out ----+  |  |  |  |  |  |        |  |  +---- UI A/B/C
  throttle in -+  |  |  |  |  |  |  |        |  |  |  +- propshaft RPM
               |  |  |  |  |  |  |  |        |  |  |  |
@@ -46,7 +46,7 @@ throttle out ----+  |  |  |  |  |  |        |  |  +---- UI A/B/C
              VP VN 25 26 32 33 27 14 12 13 15 02 04 00 3V GR 5V
               |  |  |  |  |  |  |  |  |  |  |  |  |  |
 current draw -+  |  |  |  |  |  |  |  |  |  |  |  |  +- IMU SDA
-     voltage ----+  |  |  |  |  |  |  |  |  |  |  +---- sonar 3 ping/echo
+     voltage ----+  |  |  |  |  |  |  |  |  |  |  +---- sonar ping/3 echo
    flow SCLK -------+  |  |  |  |  |  |  |  |  +------- peripheral reset
    flow MOSI ----------+  |  |  |  |  |  |  +---------- IMU SCL
    flow MISO -------------+  |  |  |  |  +------------- E-Ink MOSI
