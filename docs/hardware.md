@@ -1,33 +1,6 @@
 # SCRAP Hardware
 
-## Current Bench Wiring
-
-```
-    sonar EN ----------------+  +---------------------- UI ???
-     sonar 1 -------------+  |  |  +------------------- IMU RST
-     sonar 2 ----------+  |  |  |  |        +---------- UI ???
-     sonar 3 -------+  |  |  |  |  |        |  +------- V or I
-OLED/IMU SCL ----+  |  |  |  |  |  |        |  |  +---- UI ???
-OLED/IMU SDA -+  |  |  |  |  |  |  |        |  |  |  +- Hall (propshaft RPM)
-              |  |  |  |  |  |  |  |        |  |  |  |
-             21 22 19 23 18 05 10 09 RX TX 35 34 38 37 EN GR 3V
-           +----------------------------------------------------+
-           |                B              IA IA IA IA          |
-           | ESP32-PICO-KIT V4                                  |
-           | IA IA DW DW  A  A  W  W  W  W  W BW  W BW          |
-           +----------------------------------------------------+
-             VP VN 25 26 32 33 27 14 12 13 15 02 04 00 3V GR 5V
-                    |  |  |  |  |  |     |        |
-       steering in -+  |  |  |  |  |     |        +- steering or throttle out
-       throttle in ----+  |  |  |  |     +---------- steering or throttle out
- optical flow SCLK -------+  |  |  +---------------- optical flow CS?
- optical flow MOSI ----------+  +------------------- optical flow MISO
-
-| I = Input-only | A = ADC available | D = DAC available   |
-| B = Boot strapping pin | W = ADC available when WiFi off |
-```
-
-## Proposed Final Wiring
+## ESP32 pinouts
 
 ```
     OLED SCL ----------------+  +---------------------- E-Ink 3 CS
