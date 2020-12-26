@@ -18,12 +18,12 @@ throttle out ----+  |  |  |  |  |  |        |  |  +---- UI A/B/C
            +----------------------------------------------------+
              VP VN 25 26 32 33 27 14 12 13 15 02 04 00 3V GR 5V
               |  |  |  |  |  |  |  |  |  |  |  |  |  |
-current draw -+  |  |  |  |  |  |  |  |  |  |  |  |  +-
+current draw -+  |  |  |  |  |  |  |  |  |  |  |  |  +- E-Ink D/C
      voltage ----+  |  |  |  |  |  |  |  |  |  |  +---- IMU SDA
    flow SCLK -------+  |  |  |  |  |  |  |  |  +------- peripheral reset
    flow MOSI ----------+  |  |  |  |  |  |  +---------- IMU SCL
      sonar 1 -------------+  |  |  |  |  +------------- E-Ink MOSI
-     flow CS ----------------+  |  |  +---------------- E-Ink D/C
+     flow CS ----------------+  |  |  +----------------
     E-Ink CS -------------------+  +------------------- E-Ink SCLK
 
 | I = Input-only | A = ADC available | D = DAC available   |
