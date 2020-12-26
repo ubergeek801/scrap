@@ -6,7 +6,7 @@
     OLED SCL ----------------+  +---------------------- sonar 3
     OLED SDA -------------+  |  |  +------------------- sonar 2
 steering out ----------+  |  |  |  |        +---------- flow MISO
- steering in -------+  |  |  |  |  |        |  +------- sonar echo
+ steering in -------+  |  |  |  |  |        |  +-------
 throttle out ----+  |  |  |  |  |  |        |  |  +---- UI A/B/C
  throttle in -+  |  |  |  |  |  |  |        |  |  |  +- propshaft RPM
               |  |  |  |  |  |  |  |        |  |  |  |
