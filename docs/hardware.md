@@ -3,10 +3,10 @@
 ## ESP32 pinouts
 
 ```
-    OLED SCL ----------------+  +----------------------
-    OLED SDA -------------+  |  |  +------------------- sonar 2 echo
+    OLED SCL ----------------+  +---------------------- sonar 3 ping
+    OLED SDA -------------+  |  |  +------------------- sonar 2 ping
 steering out ----------+  |  |  |  |        +---------- flow MISO
- steering in -------+  |  |  |  |  |        |  +------- sonar 3 echo
+ steering in -------+  |  |  |  |  |        |  +------- sonar echo
 throttle out ----+  |  |  |  |  |  |        |  |  +---- UI A/B/C
  throttle in -+  |  |  |  |  |  |  |        |  |  |  +- propshaft RPM
               |  |  |  |  |  |  |  |        |  |  |  |
@@ -18,12 +18,12 @@ throttle out ----+  |  |  |  |  |  |        |  |  +---- UI A/B/C
            +----------------------------------------------------+
              VP VN 25 26 32 33 27 14 12 13 15 02 04 00 3V GR 5V
               |  |  |  |  |  |  |  |  |  |  |  |  |  |
-current draw -+  |  |  |  |  |  |  |  |  |  |  |  |  +- E-Ink D/C
+current draw -+  |  |  |  |  |  |  |  |  |  |  |  |  +- sonar 1 ping
      voltage ----+  |  |  |  |  |  |  |  |  |  |  +---- IMU SDA
    flow SCLK -------+  |  |  |  |  |  |  |  |  +------- peripheral reset
    flow MOSI ----------+  |  |  |  |  |  |  +---------- IMU SCL
-sonar 1 echo -------------+  |  |  |  |  +------------- E-Ink MOSI
-     flow CS ----------------+  |  |  +---------------- sonar ping
+             -------------+  |  |  |  |  +------------- E-Ink MOSI
+     flow CS ----------------+  |  |  +---------------- E-Ink D/C
     E-Ink CS -------------------+  +------------------- E-Ink SCLK
 
 | I = Input-only | A = ADC available | D = DAC available   |
