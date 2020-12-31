@@ -22,9 +22,9 @@ current draw -+  |  |  |  |  |  |  |  |  |  |  |  |  +- E-Ink D/C
      voltage ----+  |  |  |  |  |  |  |  |  |  |  +---- IMU SDA
    flow SCLK -------+  |  |  |  |  |  |  |  |  +------- peripheral reset
    flow MOSI ----------+  |  |  |  |  |  |  +---------- IMU SCL
-             -------------+  |  |  |  |  +------------- E-Ink MOSI
+    E-Ink CS -------------+  |  |  |  |  +------------- E-Ink MOSI
      flow CS ----------------+  |  |  +---------------- sonar 1 ping
-    E-Ink CS -------------------+  +------------------- E-Ink SCLK
+  E-Ink Busy -------------------+  +------------------- E-Ink SCLK
 
 | I = Input-only | A = ADC available | D = DAC available   |
 | B = Boot strapping pin | W = ADC available when WiFi off |
