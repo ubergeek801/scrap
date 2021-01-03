@@ -207,26 +207,35 @@ void ADNS3080::uploadSrom() {
     }
 }
 
-void ADNS3080::getMotion() {
+MotionData ADNS3080::getMotion() {
+    MotionData motionData;
+
     uint8_t motionBits = readRegister(0x02);
     if (!(motionBits & 0x80)) {
         // no motion has occurred
-        return;
+        motionData.isValid = true;
+        motionData.deltaX = 0;
+        motionData.deltaY = 0;
+        motionData.sQual = 0;
+        return motionData;
     }
 
     if (motionBits & 0x10) {
         // overflow has occurred
         ESP_LOGW(LOG, "motion overflow");
-        return;
+        motionData.isValid = false;
+        return motionData;
     }
 
     ets_delay_us(50);
-    int8_t deltaX = readRegister(0x03);
+    motionData.deltaX = readRegister(0x03);
     ets_delay_us(50);
-    int8_t deltaY = readRegister(0x04);
+    motionData.deltaY = readRegister(0x04);
     ets_delay_us(50);
-    uint8_t sQual = readRegister(0x05);
-    ESP_LOGI(LOG, "motion=%4d, %4d sQual=%3u", deltaX, deltaY, sQual);
+    motionData.sQual = readRegister(0x05);
+    motionData.isValid = true;
+
+    return motionData;
 }
 
 char grayToAscii(uint8_t grayValue) {

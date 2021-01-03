@@ -5,12 +5,19 @@
 
 #include <driver/spi_master.h>
 
+struct MotionData {
+    bool isValid;
+    int8_t deltaX;
+    int8_t deltaY;
+    uint8_t sQual;
+};
+
 class ADNS3080 {
 public:
     ADNS3080(spi_host_device_t spiHost, gpio_num_t sclk, gpio_num_t mosi, gpio_num_t miso,
             gpio_num_t cs);
 
-    void getMotion();
+    MotionData getMotion();
 
     void frameTest();
 

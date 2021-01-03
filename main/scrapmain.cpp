@@ -1,8 +1,11 @@
+#include <cstring>
+
 #include <freertos/FreeRTOS.h>
 #include <driver/adc.h>
 #include <soc/adc_channel.h>
 #include <esp_adc_cal.h>
 #include <esp_log.h>
+#include "sdkconfig.h"
 
 #include "adns3080.h"
 #include "hcsr04.h"
@@ -12,7 +15,11 @@
 #include "rc_repeater.h"
 #include "scrap_display.h"
 #include "scrap_placard.h"
-#include "sdkconfig.h"
+#include "telemetry.h"
+#include "wifi.h"
+
+#define WIFI_SSID "SCRAP"
+#define WIFI_PASSWORD "5cr4ppyN37w0rk"
 
 // parameters for current draw sensor, battery voltage sensor, UI button resistor ladder
 #define SYS_CURRENT_ADC1_CHANNEL ADC1_GPIO36_CHANNEL
@@ -24,9 +31,9 @@
 
 #define PERIPHERAL_RESET_PIN GPIO_NUM_2
 
-#define SONAR1_PING_PIN GPIO_NUM_12
-#define SONAR2_PING_PIN GPIO_NUM_9
-#define SONAR3_PING_PIN GPIO_NUM_10
+#define SONAR_RIGHT_PING_PIN GPIO_NUM_12
+#define SONAR_FRONT_PING_PIN GPIO_NUM_9
+#define SONAR_LEFT_PING_PIN GPIO_NUM_10
 #define SONAR_ECHO_PIN GPIO_NUM_34
 static MCPWMDevice& sonarMcpwmDevice = MCPWMDevice::mcpwmDevice1();
 static CaptureSignal& sonarCaptureSignal = CaptureSignal::captureSignal0();
@@ -93,6 +100,8 @@ ScrapDisplay* scrapDisplay = NULL;
 
 esp_adc_cal_characteristics_t adc1Characteristics;
 
+static int16_t sonarDistances[] = { -1, -1, -1 };
+
 static const char* LOG = "scrapmain";
 
 void initGpio() {
@@ -144,12 +153,29 @@ public:
 void SonarReceiver::echo(uint16_t mmDistance, const HCSR04Trigger* trigger) {
     if (mmDistance > 8000) {
         // empirically, over 8m appears to be an "out of range" value
+        sonarDistances[trigger->getId()] = -1;
         return;
     }
-    ESP_LOGI(LOG, "sensor %d distance is %d mm", trigger->getId(), mmDistance);
+
+    sonarDistances[trigger->getId()] = mmDistance;
 }
 
 extern "C" void app_main() {
+    // initialize the PWM generators as early as possible, to start producing valid R/C signals
+
+    PWMGenerator steeringGenerator(STEERING_OUTPUT_PIN, rcMcpwmDevice, STEERING_OUTPUT_SIGNAL,
+            STEERING_OUTPUT_TIMER, STEERING_OUTPUT_GENERATOR);
+    RCRepeater steeringRepeater("steering", STEERING_INPUT_PIN, rcMcpwmDevice,
+            steeringCaptureSignal, steeringGenerator);
+
+    PWMGenerator throttleGenerator(THROTTLE_OUTPUT_PIN, rcMcpwmDevice, THROTTLE_OUTPUT_SIGNAL,
+            THROTTLE_OUTPUT_TIMER, THROTTLE_OUTPUT_GENERATOR);
+    RCRepeater throttleRepeater("throttle", THROTTLE_INPUT_PIN, rcMcpwmDevice,
+            throttleCaptureSignal, throttleGenerator);
+
+    WiFi wifi(WIFI_SSID, WIFI_PASSWORD);
+    Telemetry telemetry;
+
     printMux = xSemaphoreCreateMutex();
 
     initGpio();
@@ -163,16 +189,6 @@ extern "C" void app_main() {
     gpio_set_level(PERIPHERAL_RESET_PIN, 0);
     vTaskDelay(40 / portTICK_PERIOD_MS); // ADNS-3080 wants 35ms after RESET
 
-    PWMGenerator steeringGenerator(STEERING_OUTPUT_PIN, rcMcpwmDevice, STEERING_OUTPUT_SIGNAL,
-            STEERING_OUTPUT_TIMER, STEERING_OUTPUT_GENERATOR);
-    RCRepeater steeringRepeater("steering", STEERING_INPUT_PIN, rcMcpwmDevice,
-            steeringCaptureSignal, steeringGenerator);
-
-    PWMGenerator throttleGenerator(THROTTLE_OUTPUT_PIN, rcMcpwmDevice, THROTTLE_OUTPUT_SIGNAL,
-            THROTTLE_OUTPUT_TIMER, THROTTLE_OUTPUT_GENERATOR);
-    RCRepeater throttleRepeater("throttle", THROTTLE_INPUT_PIN, rcMcpwmDevice,
-            throttleCaptureSignal, throttleGenerator);
-
     PropshaftSensor propshaftSensor(PROPSHAFT_GPIO, PROPSHAFT_PCNT);
 
     scrapDisplay = new ScrapDisplay(DISPLAY_I2C_PORT, DISPLAY_I2C_SCL_PIN, DISPLAY_I2C_SDA_PIN,
@@ -184,24 +200,22 @@ extern "C" void app_main() {
     scrapPlacard.test();
 
     SonarReceiver sonarReceiver(SONAR_ECHO_PIN, sonarMcpwmDevice, sonarCaptureSignal);
-    HCSR04Trigger sonar1(1, &sonarReceiver, SONAR1_PING_PIN);
-    HCSR04Trigger sonar2(2, &sonarReceiver, SONAR2_PING_PIN);
-    HCSR04Trigger sonar3(3, &sonarReceiver, SONAR3_PING_PIN);
-
-    sonar1.ping();
-    vTaskDelay(60 / portTICK_PERIOD_MS);
-    sonar2.ping();
-    vTaskDelay(60 / portTICK_PERIOD_MS);
-    sonar3.ping();
-    vTaskDelay(60 / portTICK_PERIOD_MS);
+    HCSR04Trigger sonarRight(0, &sonarReceiver, SONAR_RIGHT_PING_PIN);
+    HCSR04Trigger sonarFront(1, &sonarReceiver, SONAR_FRONT_PING_PIN);
+    HCSR04Trigger sonarLeft(2, &sonarReceiver, SONAR_LEFT_PING_PIN);
 
     NXPIMU imu(IMU_I2C_PORT, IMU_I2C_SCL_PIN, IMU_I2C_SDA_PIN);
-    imu.getMeasurements();
 
     ADNS3080 opticalFlow(OPTICAL_SPI_HOST, OPTICAL_SCLK_GPIO, OPTICAL_MOSI_GPIO, OPTICAL_MISO_GPIO,
             OPTICAL_CS_GPIO);
+
+    // a fairly unsophisticated telemetry gathering loop (data is collected synchronously at the
+    // same rate for all channels)
+    uint64_t telemetrySequence = 0;
     while (true) {
-        opticalFlow.getMotion();
+        MotionData motionData = opticalFlow.getMotion();
+
+        InertialData inertialData = imu.getMeasurements();
 
         uint16_t propshaftPulses = propshaftSensor.getPulseCount();
 
@@ -211,12 +225,41 @@ extern "C" void app_main() {
         uint32_t voltageValue;
         esp_adc_cal_get_voltage(SYS_VOLTAGE_ADC_CHANNEL, &adc1Characteristics, &voltageValue);
 
+        // we don't actually use this right now
         uint32_t buttonValue;
         esp_adc_cal_get_voltage(UI_BUTTONS_ADC_CHANNEL, &adc1Characteristics, &buttonValue);
 
-        ESP_LOGI(LOG, "propshaft=%d current=%d voltage=%d, button=%d", propshaftPulses,
-                currentValue, voltageValue, buttonValue);
+        sonarRight.ping();
+        vTaskDelay(60 / portTICK_PERIOD_MS);
+        int16_t rightDistance = sonarDistances[0];
 
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+        sonarFront.ping();
+        vTaskDelay(60 / portTICK_PERIOD_MS);
+        int16_t frontDistance = sonarDistances[1];
+
+        sonarLeft.ping();
+        vTaskDelay(60 / portTICK_PERIOD_MS);
+        int16_t leftDistance = sonarDistances[2];
+
+        char telemetryData[384];
+        sprintf(telemetryData, "seq=%lld,time=%lld,", ++telemetrySequence, esp_timer_get_time());
+        if (motionData.isValid) {
+            char motionTelemetry[64];
+            sprintf(motionTelemetry, "motionX=%d,motionY=%d,sQual=%u,", motionData.deltaX,
+                    motionData.deltaY, motionData.sQual);
+            strcat(telemetryData, motionTelemetry);
+        }
+        char telemetryData2[256];
+        sprintf(telemetryData2, "accelX=%d,accelY=%d,accelZ=%d,magX=%d,magY=%d,magZ=%d,rotX=%d,"
+                "rotY=%d,rotZ=%d,temp1=%u,temp2=%u,distRight=%d,distFront=%d,distLeft=%d,"
+                "propshaft=%u,current=%u,voltage=%u", inertialData.accelX, inertialData.accelY,
+                inertialData.accelZ, inertialData.magX, inertialData.magY, inertialData.magZ,
+                inertialData.rotX, inertialData.rotY, inertialData.rotZ, inertialData.temp1,
+                inertialData.temp2, rightDistance, frontDistance, leftDistance, propshaftPulses,
+                currentValue, voltageValue);
+        strcat(telemetryData, telemetryData2);
+
+        ESP_LOGI(LOG, "%s", telemetryData);
+        telemetry.postTelemetry(telemetryData);
     }
 }
